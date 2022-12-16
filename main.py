@@ -1,5 +1,5 @@
 # Python
-
+import json
 from uuid import UUID # Universal User Identification
 from datetime import date
 from datetime import datetime
@@ -14,6 +14,7 @@ from pydantic import Field
 # FastAPI
 from fastapi import FastAPI
 from fastapi import status
+from fastapi import Body
 
 app = FastAPI()
 
@@ -26,10 +27,10 @@ class UserBase(BaseModel):
 
 
 class UserLogin(BaseModel):
-     password: str = Field(
+    password: str = Field(
         ...,
         min_length=8, 
-        max_length=20
+        max_length=64
     )
 
 
@@ -47,18 +48,25 @@ class User(UserBase):
     birth_date: Optional[date] = Field(default=None)
 
 
+class UserRegister(User):
+     password: str = Field(
+        ...,
+        min_length=8, 
+        max_length=64
+    )
+
 class Tweet(BaseModel):
-    tweet_id: UUID
+    tweet_id: UUID = Field(...)
     content: str = Field(
         ...,
-        min_length=1, 
-        max_length=250, 
-        )
+        min_length = 1, 
+        max_length = 250, 
+    )
     created_at: datetime = Field(
         default=datetime.now()
     )
     updated_at: Optional[datetime] = Field(default=None)
-    by: User = Field(
+    by: User = Field(   
         ...
     )
 
@@ -76,8 +84,33 @@ class Tweet(BaseModel):
     summary="Register a user",
     tags=["Users"]
 )
-def signup():
-    pass
+def signup(user: UserRegister = Body(...)):
+    """
+    Signup User
+
+    This path operations register a user in the app
+
+    Parameters:
+        -Request body parameter
+            -user: UserRegister
+    
+    Returns a json with the basic user information:
+        -user_id: UUID
+        -email: EmailStr
+        -firstname: Str
+        -last_name: Str
+        -birthdate: datetime
+    """
+    with open("users.json", "r+", encoding="utf-8") as f:
+        results = json.loads(f.read())
+        user_dict = user.dict()
+        user_dict["user_id"] = str(user_dict["user_id"])
+        user_dict["birth_date"] = str(user_dict["birth_date"])
+        results.append(user_dict)
+        f.seek(0)
+        f.write(json.dumps(results))
+
+        return user
 
 ### Login a user
 @app.get(
@@ -148,7 +181,7 @@ def update_a_user():
 def home():
     return {"Twitter API": "Working!"}
 
-### Post a user
+### Post a tweet
 @app.post(
     path="/post",
     response_model=Tweet,

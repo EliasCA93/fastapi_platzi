@@ -1,1 +1,18 @@
-[]
+[
+    {
+        "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "email": "eca_madrid@hotmail.com",
+        "first_name": "Elias",
+        "last_name": "Castellanos",
+        "birth_date": "1978-12-16",
+        "password": "12345678qwert"
+    },
+    {
+        "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "email": "diegocl@gmail.com",
+        "first_name": "Diego",
+        "last_name": "Castellanos",
+        "birth_date": "2000-12-16",
+        "password": "1q2w3e4r5t6y"
+    }
+]
